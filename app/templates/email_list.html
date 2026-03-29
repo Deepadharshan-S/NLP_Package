@@ -1,16 +1,25 @@
-<div id="email-list">
+{% if emails|length == 0 %}
+
+<!-- 📭 Empty State -->
+<div class="flex flex-col items-center justify-center h-full text-gray-400 py-20">
+    <div class="text-4xl mb-2">📭</div>
+    <p class="text-lg font-medium">No emails found</p>
+    <p class="text-sm">You're all caught up 🎉</p>
+</div>
+
+{% else %}
 
     {% for email in emails %}
     <div 
         class="email-item p-4 border-b cursor-pointer flex items-start gap-2
-            hover:bg-gray-100
+            hover:bg-gray-100 transition
             {% if not email.is_read %}bg-blue-50{% endif %}"
         
         hx-get="/emails/view/{{ email.id }}"
         hx-target="#email-content"
         hx-swap="innerHTML"
 
-        onclick="handleClick(this)"
+        hx-on:click="handleClick(this)"
     >
 
         <!-- 🔵 Unread Dot -->
@@ -21,13 +30,13 @@
         <div class="flex-1">
 
             <!-- Subject -->
-            <h3 class="email-title {% if not email.is_read %}font-bold{% else %}font-semibold{% endif %}">
+            <h3 class="email-title {% if not email.is_read %}font-bold{% else %}font-medium{% endif %}">
                 {{ email.subject }}
             </h3>
 
             <!-- Preview -->
-            <p class="text-sm text-gray-500">
-                {{ email.body[:60] }}...
+            <p class="text-sm text-gray-500 truncate">
+                {{ email.body[:80] }}...
             </p>
 
         </div>
@@ -35,14 +44,15 @@
     </div>
     {% endfor %}
 
-    <!-- 🔥 Pagination (unchanged) -->
-    <div class="flex justify-between p-4 items-center">
+    <!-- 🔥 Pagination -->
+    <div class="flex justify-between p-4 items-center border-t">
 
         {% if offset > 0 %}
         <button 
             hx-get="{{ route }}?offset={{ offset - limit }}&limit={{ limit }}"
             hx-target="#email-list"
-            class="px-4 py-2 bg-gray-200 rounded"
+            hx-swap="innerHTML"
+            class="px-4 py-1.5 text-sm bg-gray-200 rounded hover:bg-gray-300"
         >
             Prev
         </button>
@@ -58,7 +68,8 @@
         <button 
             hx-get="{{ route }}?offset={{ offset + limit }}&limit={{ limit }}"
             hx-target="#email-list"
-            class="px-4 py-2 bg-gray-200 rounded"
+            hx-swap="innerHTML"
+            class="px-4 py-1.5 text-sm bg-gray-200 rounded hover:bg-gray-300"
         >
             Next
         </button>
@@ -66,4 +77,4 @@
 
     </div>
 
-</div>
+{% endif %}

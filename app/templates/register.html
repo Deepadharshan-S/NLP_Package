@@ -1,40 +1,112 @@
-<form id="registerForm"
-      class="bg-white p-6 rounded shadow space-y-4">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-    <input id="email" placeholder="Email"
-           class="w-full p-2 border rounded" />
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
 
-    <input id="password" type="password"
-           placeholder="Password"
-           class="w-full p-2 border rounded" />
+    <div class="w-full max-w-md bg-white p-8 rounded-xl shadow">
 
-    <button class="bg-blue-500 text-white px-4 py-2 rounded">
-        Register
-    </button>
+        <!-- Title -->
+        <h2 class="text-2xl font-bold text-center mb-6">
+            Create Account
+        </h2>
 
-    <p id="error" class="text-red-500 mt-2"></p>
-</form>
+        <!-- Form -->
+        <form id="registerForm" class="space-y-4">
 
-<script>
-document.getElementById("registerForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+            <!-- Email -->
+            <div>
+                <label class="block text-sm font-medium mb-1">
+                    Email
+                </label>
+                <input 
+                    id="email"
+                    type="email"
+                    required
+                    placeholder="you@example.com"
+                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-400 outline-none"
+                />
+            </div>
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+            <!-- Password -->
+            <div>
+                <label class="block text-sm font-medium mb-1">
+                    Password
+                </label>
+                <input 
+                    id="password"
+                    type="password"
+                    required
+                    minlength="6"
+                    placeholder="••••••••"
+                    class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-400 outline-none"
+                />
+            </div>
 
-    const res = await fetch("/auth/register", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
+            <!-- Submit -->
+            <button 
+                id="submitBtn"
+                class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">
+                Register
+            </button>
+
+            <!-- Error -->
+            <p id="error" class="text-red-500 text-sm text-center"></p>
+
+            <!-- Login link -->
+            <p class="text-sm text-center text-gray-500">
+                Already have an account?
+                <a href="/login" class="text-blue-500 hover:underline">
+                    Login
+                </a>
+            </p>
+
+        </form>
+
+    </div>
+
+    <script>
+    const form = document.getElementById("registerForm");
+    const errorEl = document.getElementById("error");
+    const btn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        errorEl.innerText = "";
+        btn.innerText = "Registering...";
+        btn.disabled = true;
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        try {
+            const res = await fetch("/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (res.status === 201) {
+                window.location.href = "/";
+            } else {
+                const data = await res.json();
+                errorEl.innerText = data.detail || "Registration failed";
+            }
+        } catch (err) {
+            errorEl.innerText = "Server error. Try again.";
+        }
+
+        btn.innerText = "Register";
+        btn.disabled = false;
     });
+    </script>
 
-    if (res.status === 201) {
-        window.location.href = "/";
-    } else {
-        const data = await res.json();
-        document.getElementById("error").innerText = data.detail;
-    }
-});
-</script>
+</body>
+</html>
