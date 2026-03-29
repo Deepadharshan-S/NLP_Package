@@ -1,11 +1,24 @@
 from pydantic import BaseModel
+from fastapi import Form
 from datetime import datetime
 
 
 class EmailCreate(BaseModel):
-    receiver_id: int
+    receiver_email: str
     subject: str
     body: str
+    @classmethod
+    def as_form(
+        cls,
+        receiver_email: str = Form(...),
+        subject: str = Form(...),
+        body: str = Form(...)
+    ):
+        return cls(
+            receiver_email=receiver_email,
+            subject=subject,
+            body=body
+        )
 
 
 class EmailOut(BaseModel):

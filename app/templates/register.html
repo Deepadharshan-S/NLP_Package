@@ -1,0 +1,40 @@
+<form id="registerForm"
+      class="bg-white p-6 rounded shadow space-y-4">
+
+    <input id="email" placeholder="Email"
+           class="w-full p-2 border rounded" />
+
+    <input id="password" type="password"
+           placeholder="Password"
+           class="w-full p-2 border rounded" />
+
+    <button class="bg-blue-500 text-white px-4 py-2 rounded">
+        Register
+    </button>
+
+    <p id="error" class="text-red-500 mt-2"></p>
+</form>
+
+<script>
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const res = await fetch("/auth/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+    });
+
+    if (res.status === 201) {
+        window.location.href = "/";
+    } else {
+        const data = await res.json();
+        document.getElementById("error").innerText = data.detail;
+    }
+});
+</script>

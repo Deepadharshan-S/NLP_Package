@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mail App</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex h-screen">
+
+    <!-- Sidebar -->
+    <div class="w-64 bg-white shadow-md p-4">
+        <h2 class="text-xl font-bold mb-6">📧 Mail</h2>
+
+        <a href="/inbox" class="block p-2 rounded hover:bg-gray-200">Inbox</a>
+        <a href="/spam" class="block p-2 rounded hover:bg-gray-200">Spam</a>
+        <a href="/send" class="block p-2 rounded hover:bg-gray-200">Compose</a>
+        <a href="/logout" class="block p-2 rounded hover:bg-gray-200 text-red-500">Logout</a>
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1 p-6 overflow-hidden">
+        {% block content %}{% endblock %}
+    </div>
+
+</div>
+<script>
+function handleClick(el) {
+    // highlight
+    document.querySelectorAll(".email-item").forEach(item => {
+        item.classList.remove("bg-gray-200");
+    });
+    el.classList.add("bg-gray-200");
+
+    // remove unread background
+    el.classList.remove("bg-blue-50");
+
+    // hide dot (DON'T remove)
+    const dot = el.querySelector(".unread-dot");
+    if (dot) {
+        dot.classList.add("invisible");
+        dot.classList.remove("bg-blue-500");
+    }
+
+    // change bold → normal
+    const title = el.querySelector(".email-title");
+    if (title) {
+        title.classList.remove("font-bold");
+        title.classList.add("font-semibold");
+    }
+}
+</script>
+</body>
+</html>

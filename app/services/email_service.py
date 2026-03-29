@@ -11,7 +11,6 @@ def process_email(email_id: int):
         if not email:
             return
 
-        # 🔄 mark processing
         email.status = "processing"
         db.commit()
 

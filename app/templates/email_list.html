@@ -1,0 +1,69 @@
+<div id="email-list">
+
+    {% for email in emails %}
+    <div 
+        class="email-item p-4 border-b cursor-pointer flex items-start gap-2
+            hover:bg-gray-100
+            {% if not email.is_read %}bg-blue-50{% endif %}"
+        
+        hx-get="/emails/view/{{ email.id }}"
+        hx-target="#email-content"
+        hx-swap="innerHTML"
+
+        onclick="handleClick(this)"
+    >
+
+        <!-- 🔵 Unread Dot -->
+        <div class="unread-dot w-2 h-2 mt-2 rounded-full flex-shrink-0
+            {% if email.is_read %}invisible{% else %}bg-blue-500{% endif %}">
+        </div>
+
+        <div class="flex-1">
+
+            <!-- Subject -->
+            <h3 class="email-title {% if not email.is_read %}font-bold{% else %}font-semibold{% endif %}">
+                {{ email.subject }}
+            </h3>
+
+            <!-- Preview -->
+            <p class="text-sm text-gray-500">
+                {{ email.body[:60] }}...
+            </p>
+
+        </div>
+
+    </div>
+    {% endfor %}
+
+    <!-- 🔥 Pagination (unchanged) -->
+    <div class="flex justify-between p-4 items-center">
+
+        {% if offset > 0 %}
+        <button 
+            hx-get="{{ route }}?offset={{ offset - limit }}&limit={{ limit }}"
+            hx-target="#email-list"
+            class="px-4 py-2 bg-gray-200 rounded"
+        >
+            Prev
+        </button>
+        {% else %}
+        <div></div>
+        {% endif %}
+
+        <span class="text-sm text-gray-500">
+            Page {{ (offset // limit) + 1 }}
+        </span>
+
+        {% if offset + limit < total %}
+        <button 
+            hx-get="{{ route }}?offset={{ offset + limit }}&limit={{ limit }}"
+            hx-target="#email-list"
+            class="px-4 py-2 bg-gray-200 rounded"
+        >
+            Next
+        </button>
+        {% endif %}
+
+    </div>
+
+</div>

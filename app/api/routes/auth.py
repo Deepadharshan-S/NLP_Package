@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.schemas.user import UserCreate, UserOut
 from app.schemas.token import Token
@@ -25,11 +26,14 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
         password_hash=hash_password(user.password)
     )
 
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-
-    return new_user
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return new_user
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Email already exists")
 
 
 @router.post("/login", response_model=Token)
@@ -48,7 +52,8 @@ def login(
 
     return {
         "access_token": token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "expires_in": 900
     }
 
 

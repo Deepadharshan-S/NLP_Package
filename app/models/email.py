@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime, Text
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.db.base import Base
 
@@ -9,6 +10,9 @@ class Email(Base):
 
     sender_id = Column(Integer, ForeignKey("users.id"))
     receiver_id = Column(Integer, ForeignKey("users.id"))
+    
+    sender = relationship("User", foreign_keys=[sender_id], back_populates="sent_emails")
+    receiver = relationship("User", foreign_keys=[receiver_id], back_populates="received_emails")
 
     subject = Column(String)
     body = Column(Text)
