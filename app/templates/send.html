@@ -4,7 +4,15 @@
 
 <h1 class="text-2xl font-semibold mb-4">Compose Email</h1>
 
-<form method="post" action="/emails/send" class="bg-white p-6 rounded shadow space-y-4">
+<!-- 🔴 Error container (move ABOVE form) -->
+<div id="form-errors"></div>
+
+<form 
+    hx-post="/emails/send"
+    hx-target="#form-errors"
+    hx-swap="innerHTML"
+    class="bg-white p-6 rounded shadow space-y-4"
+>
 
     <input name="receiver_email" placeholder="To (email)"
            class="w-full p-2 border rounded" />
@@ -21,5 +29,11 @@
     </button>
 
 </form>
+<script>
+function handleFormError(event) {
+    const target = document.querySelector("#form-errors");
+    target.innerHTML = event.detail.xhr.response;
+}
+</script>
 
 {% endblock %}

@@ -57,8 +57,13 @@ def send_email(
 
     background_tasks.add_task(process_email, new_email.id)
 
-    from fastapi.responses import RedirectResponse
-    return RedirectResponse(url="/inbox", status_code=303)
+    from fastapi.responses import HTMLResponse
+    return HTMLResponse(
+    content="""
+    <div class="text-green-600 font-medium">Email sent! Redirecting...</div>
+    """,
+    headers={"HX-Redirect": "/inbox"}
+)
 
 @router.get("/inbox", response_model=list[EmailOut])
 def get_inbox(

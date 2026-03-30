@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, Depends, Form, HTTPException
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -170,3 +171,20 @@ def auth_exception_handler(request: Request, exc: HTTPException):
         status_code=exc.status_code,
         content={"detail": exc.detail}
     )
+    
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    
+    errors = []
+    
+    for err in exc.errors():
+        field = err["loc"][-1]
+        msg = err["msg"]
+        errors.append(f"{field.replace('_', ' ').title()} - {msg}")
+
+    return templates.TemplateResponse(
+    request,
+    "form_error.html",
+    {"errors": errors},
+    status_code=200
+)
